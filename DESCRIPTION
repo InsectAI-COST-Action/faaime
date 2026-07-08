@@ -1,0 +1,31 @@
+Package: faaime
+Title: Functions for the Analysis of AI-derived Monitoring data in Ecological systems
+Version: 0.0.1
+Authors@R: c(
+    person(
+      given = "Joseph", family = "Chipperfield",
+      role = c("aut", "cre"),
+      email = "joseph.chipperfield@nina.no",
+      comment = c(ORCID = "0000-0003-3314-0846")
+    ),
+    person(
+      given = "Grace", family = "Skinner",
+      role = c("aut"),
+      email = "graski@ceh.ac.uk"
+    )
+  )
+Maintainer: Joseph D. Chipperfield <joechip@googlemail.com>
+Description: An R package to provide a collection of functions to ease the analysis of population and community data arising from automated monitoring systems.
+License: GPL (>= 2)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports:
+    nimble,
+    Rcpp
+LazyData: true
+StagedInstall: no
+Depends: R (>= 4.3.0)
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo

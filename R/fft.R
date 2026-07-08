@@ -1,0 +1,60 @@
+# 1.1 ---- Fast Fourier Transform (Internal Function) ----
+#' NIMBLE FFT External Call
+#'
+#' An internal wrapper to call the fft function from the armadillo library and
+#' expose in a way that NIMBLE can access
+#'
+#' @param pReal Numeric array containing the real component of the input.
+#' @param pImag Numeric array containing the imaginary component of the input.
+#' @param iLength An integer scalar that contains the length of the input arrays.
+#' @param bInverse If \code{FALSE} then a forward transform is applied. If
+#' \code{TRUE} then an inverse transform is applied.
+#'
+#' @return Void NIMBLE object type
+#'
+#' @author Joseph D. Chipperfield, \email{joechip90@@googlemail.com}
+#' @seealso \code{\link[nimble]{nimbleExternalCall}}
+#' @noRd
+nimble_fft <- nimble::nimbleExternalCall(
+  function(pReal = double(1), pImag = double(1), iLength = integer(0), bInverse = logical(0)){},
+  Cfun = "nimble_fft",
+  returnType = void(),
+  headerFile = file.path(find.package("faaime"), "nimble_lib", "nimble_fft.h"),
+  oFile = file.path(find.package("faaime"), "nimble_lib", "nimble_fft.o")
+)
+
+# 1.2 ---- Fast Fourier Transform (NIMBLE Function) ----
+#' NIMBLE Interface to Apply a Forward/Inverse Fast Fourier Transform
+#'
+#' Perform a forward or inverse Fast Fourier Transform using the routines
+#' provided by the armadillo linear algebra library
+#' (\url{https://arma.sourceforge.net/}). The function is wrapped such that the
+#' function can be used in NIMBLE model code.
+#'
+#' @param pReal Numeric array containing the real component of the input.
+#' @param pImag Numeric array containing the imaginary component of the input.
+#' @param bInverse If \code{FALSE} then a forward transform is applied. If
+#' \code{TRUE} then an inverse transform is applied.
+#'
+#' @return A matrix with 2 rows and a number of columns equal to
+#' \code{max(length(pReal), length(pImag))}. The first row contains the real
+#' components of the transformed output and the second row contains the
+#' imaginary components of the transformed output.
+#'
+#' @author Joseph D. Chipperfield, \email{joechip90@@googlemail.com}
+#' @seealso \code{\link[nimble]{nimbleFunction}}
+#' @export
+nimfft <- nimble::nimbleFunction(run = function(pReal = double(1), pImag = double(1), bInverse = logical(0)) {
+  returnType(double(2))
+  # Copy the inputs to temporary arrays (recycling inputs as neccessary)
+  outLength <- max(length(pReal), length(pImag))
+  cpyReal <- pReal[0:(outLength - 1) %% length(pReal) + 1]
+  cpyImag <- pImag[0:(outLength - 1) %% length(pImag) + 1]
+  # Call the fft function with cpyReal and cpyImag being changed in place
+  nimble_fft(cpyReal, cpyImag, outLength, bInverse)
+  # Copy the outputs across to an output matrix
+  outMatrix <- matrix(0, nrow = 2, ncol = outLength)
+  outMatrix[1, 1:outLength] <- cpyReal
+  outMatrix[2, 1:outLength] <- cpyImag
+  return(outMatrix)
+})
