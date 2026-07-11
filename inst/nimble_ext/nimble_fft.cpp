@@ -1,7 +1,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
 #include <complex>
-#include "../inst/nimble_lib/nimble_fft.h"
+#include "nimble_fft.h"
 
 // ---- 1. External Interface for Armadillo's Fast Fourier Transform Function ----
 // A function the encapsulates the fft/ifft functions of the Armadillo library in a
